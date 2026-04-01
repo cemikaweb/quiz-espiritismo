@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Espiritismo — Quanto você conhece a Doutrina?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #B8932A;
+    --gold-light: #D4AE5A;
+    --gold-pale: #F5EDD6;
+    --gold-bg: #FBF6EC;
+    --beige: #EDE5D0;
+    --beige-dark: #C8B98A;
+    --text: #2C2318;
+    --text-muted: #7A6A50;
+    --correct: #3B6E2A;
+    --correct-bg: #EEF5EA;
+    --wrong: #8B2222;
+    --wrong-bg: #F8EEEE;
+    --radius: 14px;
+    --shadow: 0 4px 32px rgba(184,147,42,0.10);
+  }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--gold-bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 4rem;
+  }
+
+  /* Decorative top border */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold-pale), var(--gold), var(--gold-light), var(--gold), var(--gold-pale));
+    z-index: 100;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 620px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 2.5rem 0 2rem;
+    position: relative;
+  }
+
+  .ornament {
+    font-size: 13px;
+    letter-spacing: 8px;
+    color: var(--gold-light);
+    margin-bottom: 1rem;
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(26px, 5vw, 36px);
+    font-weight: 600;
+    color: var(--gold);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.5px;
+  }
+
+  .header p {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 1.5rem 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 0.5px;
+    background: var(--beige-dark);
+    opacity: 0.5;
+  }
+  .divider-gem {
+    width: 8px; height: 8px;
+    background: var(--gold-light);
+    transform: rotate(45deg);
+  }
+
+  /* Progress */
+  .progress-wrap { margin-bottom: 1.5rem; }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .progress-bar {
+    height: 3px;
+    background: var(--beige);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* Card */
+  .card {
+    background: #fff;
+    border: 0.5px solid var(--beige-dark);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1rem;
+    animation: fadeUp 0.35s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-level {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .q-level::before {
+    content: '';
+    width: 16px; height: 1px;
+    background: var(--gold-light);
+  }
+
+  .q-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(18px, 3.5vw, 22px);
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--text);
+  }
+
+  /* Options */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 0.5px solid var(--beige-dark);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    text-align: left;
+    width: 100%;
+    box-shadow: 0 1px 4px rgba(184,147,42,0.04);
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .opt:nth-child(1) { animation-delay: 0.05s; }
+  .opt:nth-child(2) { animation-delay: 0.10s; }
+  .opt:nth-child(3) { animation-delay: 0.15s; }
+  .opt:nth-child(4) { animation-delay: 0.20s; }
+
+  .opt:hover:not(:disabled) {
+    border-color: var(--gold);
+    background: var(--gold-bg);
+    transform: translateX(3px);
+  }
+
+  .opt-letter {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--gold-pale);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .opt.correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    color: var(--correct);
+    transform: none;
+  }
+  .opt.correct .opt-letter {
+    background: var(--correct);
+    color: #fff;
+  }
+  .opt.wrong {
+    background: var(--wrong-bg);
+    border-color: var(--wrong);
+    color: var(--wrong);
+    transform: none;
+  }
+  .opt.wrong .opt-letter {
+    background: var(--wrong);
+    color: #fff;
+  }
+  .opt.dimmed {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* Feedback */
+  .feedback {
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    font-size: 14px;
+    line-height: 1.6;
+    display: none;
+    animation: fadeUp 0.25s ease;
+    margin-bottom: 1rem;
+  }
+  .feedback.correct {
+    display: block;
+    background: var(--correct-bg);
+    color: var(--correct);
+    border: 0.5px solid #a3c99a;
+  }
+  .feedback.wrong {
+    display: block;
+    background: var(--wrong-bg);
+    color: var(--wrong);
+    border: 0.5px solid #d9a0a0;
+  }
+
+  /* Next btn */
+  .next-btn {
+    display: none;
+    width: 100%;
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.9rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    margin-top: 0.25rem;
+  }
+  .next-btn:hover { background: #9a7a22; transform: translateY(-1px); }
+  .next-btn:active { transform: scale(0.98); }
+
+  /* Result */
+  .result-card {
+    display: none;
+    background: #fff;
+    border: 0.5px solid var(--beige-dark);
+    border-radius: var(--radius);
+    padding: 2.5rem 1.75rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .result-icon { font-size: 52px; margin-bottom: 1rem; }
+
+  .result-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+
+  .result-score {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 64px;
+    font-weight: 600;
+    color: var(--gold);
+    line-height: 1;
+    margin: 1rem 0 0.25rem;
+  }
+
+  .result-score-label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .level-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: #fff;
+    border-radius: 50px;
+    padding: 0.45rem 1.5rem;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+
+  .result-sub {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 420px;
+    margin: 0 auto 2rem;
+  }
+
+  .restart-btn {
+    background: transparent;
+    border: 0.5px solid var(--gold);
+    color: var(--gold);
+    border-radius: 10px;
+    padding: 0.75rem 2rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .restart-btn:hover { background: var(--gold-bg); transform: translateY(-1px); }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 2.5rem;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--beige-dark);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1rem 0.75rem 3rem; }
+    .card, .result-card { padding: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <span class="ornament">✦ &nbsp; ✦ &nbsp; ✦</span>
+    <h1>Quanto você conhece<br>o Espiritismo?</h1>
+    <p>20 questões · do básico ao avançado</p>
+  </div>
+
+  <div class="divider"><div class="divider-gem"></div></div>
+
+  <div id="quiz-section">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="q-count">Questão 1 de 20</span>
+        <span id="score-count">0 acertos</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="prog-fill" style="width:5%"></div>
+      </div>
+    </div>
+
+    <div class="card" id="q-card">
+      <div class="q-level" id="q-level">Iniciante</div>
+      <div class="q-text" id="q-text"></div>
+    </div>
+
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Próxima questão →</button>
+  </div>
+
+  <div class="result-card" id="result-card">
+    <div class="result-icon" id="r-icon"></div>
+    <div class="result-title" id="r-title"></div>
+    <div class="result-score" id="r-score"></div>
+    <div class="result-score-label">de 20 acertos</div>
+    <div class="level-badge" id="r-badge"></div>
+    <div class="result-sub" id="r-sub"></div>
+    <button class="restart-btn" onclick="restart()">Refazer o quiz</button>
+  </div>
+
+  <div class="footer">✦ &nbsp; Filosofia Espírita &nbsp; ✦</div>
+
+</div>
+
+<script>
+const questions = [
+  { level:"Iniciante", q:"Quem é considerado o codificador da Doutrina Espírita?", opts:["Léon Denis","Allan Kardec","Camille Flammarion","Herculano Pires"], correct:1, explain:"Allan Kardec (pseudônimo de Hippolyte Léon Denizard Rivail) codificou o Espiritismo na França no século XIX." },
+  { level:"Iniciante", q:"Qual foi o primeiro livro da codificação espírita, publicado em 1857?", opts:["O Livro dos Médiuns","O Evangelho Segundo o Espiritismo","O Livro dos Espíritos","A Gênese"], correct:2, explain:"O Livro dos Espíritos, publicado em 18 de abril de 1857, é considerado a obra fundamental da Doutrina Espírita." },
+  { level:"Iniciante", q:"Segundo o Espiritismo, o que é o perispírito?", opts:["O corpo físico do ser humano","O envoltório semimaterial que une o espírito ao corpo","A alma após a morte","Um tipo de manifestação mediúnica"], correct:1, explain:"O perispírito é o corpo intermediário, semimaterial, que serve de elo entre o espírito e o corpo físico." },
+  { level:"Iniciante", q:"O Espiritismo é definido por Allan Kardec como:", opts:["Uma religião cristã","Uma filosofia de cunho científico, moral e religioso","Uma prática de cura espiritual","Uma vertente do ocultismo"], correct:1, explain:"Kardec definiu o Espiritismo como uma ciência que trata da natureza, origem e destino dos Espíritos, e de suas relações com o mundo corporal." },
+  { level:"Iniciante", q:"Qual é o livro da codificação que trata especificamente da prática mediúnica?", opts:["A Gênese","O Céu e o Inferno","O Livro dos Médiuns","Obras Póstumas"], correct:2, explain:"O Livro dos Médiuns, publicado em 1861, trata das manifestações dos Espíritos e dos diferentes tipos de mediunidade." },
+  { level:"Iniciante", q:"Para o Espiritismo, qual é a lei que rege o progresso moral e espiritual?", opts:["Lei do Destino","Lei do Karma","Lei do Progresso","Lei da Causa e Efeito"], correct:3, explain:"A Lei da Causa e Efeito é fundamental no Espiritismo: cada ação gera uma consequência que contribui para o progresso do espírito." },
+  { level:"Intermediário", q:"O que é a 'expiação' segundo a doutrina espírita?", opts:["Um ritual de purificação em vida","O sofrimento voluntário aceito para reparar faltas passadas","A punição divina aplicada por Deus","Um estado de torpor entre mortes"], correct:1, explain:"A expiação é o sofrimento — físico ou moral — que o espírito aceita ou vivencia para reparar faltas cometidas em existências anteriores." },
+  { level:"Intermediário", q:"Segundo o Espiritismo, o que acontece com espíritos muito atrasados moralmente após o desencarne?", opts:["São destruídos definitivamente","Reencarnizam imediatamente sem memória","Permanecem em estado de letargia ou perturbação","São enviados para outro planeta"], correct:2, explain:"Espíritos moralmente atrasados podem permanecer em estado de perturbação ou letargia no mundo espiritual, muitas vezes sem compreender que desencarnaram." },
+  { level:"Intermediário", q:"Qual livro da codificação aborda as penas e as recompensas futuras?", opts:["O Livro dos Espíritos","O Céu e o Inferno","A Gênese","O Evangelho Segundo o Espiritismo"], correct:1, explain:"O Céu e o Inferno, publicado em 1865, examina as doutrinas de penas e recompensas à luz da razão e da justiça divina." },
+  { level:"Intermediário", q:"O que o Espiritismo entende por 'fluido vital'?", opts:["O sangue que circula no corpo físico","Um princípio imaterial que anima os seres vivos","A energia espiritual transmitida na cura","O plasma do perispírito"], correct:1, explain:"O fluido vital é o princípio intermediário entre a matéria e o espírito que sustenta a vida orgânica dos seres." },
+  { level:"Intermediário", q:"No Espiritismo, o que diferencia um espírito 'leviano' de um espírito 'sábio'?", opts:["O número de reencarnações já vividas","O nível de desenvolvimento moral e intelectual","A religião que praticavam em vida","A capacidade mediúnica que possuem"], correct:1, explain:"A classificação dos espíritos no Livro dos Espíritos se baseia no grau de desenvolvimento moral e intelectual." },
+  { level:"Intermediário", q:"Segundo Kardec, qual é a finalidade das reencarnações?", opts:["Punir os espíritos pelos seus erros","Permitir que o espírito se aperfeiçoe progressivamente","Manter o equilíbrio populacional da Terra","Cumprir o destino traçado por Deus"], correct:1, explain:"A reencarnação é um meio de progresso: cada vida oferece ao espírito novas oportunidades de aprendizado, reparação e evolução moral." },
+  { level:"Intermediário", q:"Qual é o papel da 'caridade' na Doutrina Espírita?", opts:["É uma prática opcional recomendada apenas para médiuns","É o princípio central da moral espírita, acima de tudo","É equivalente ao dízimo religioso","É uma virtude secundária, abaixo da fé"], correct:1, explain:"Kardec afirma que 'fora da caridade não há salvação', tornando-a o princípio moral central do Espiritismo." },
+  { level:"Avançado", q:"O que a Gênese espírita chama de 'Espíritos elementais'?", opts:["Espíritos de crianças que morreram antes de falar","Espíritos ligados aos quatro elementos da natureza","Seres em fase inicial de espiritualização, sem consciência plena","Espíritos que habitam o centro da Terra"], correct:2, explain:"Na Gênese, os Espíritos elementais representam os primeiros graus de espiritualização da matéria, ainda sem consciência plena de si mesmos." },
+  { level:"Avançado", q:"Segundo o Espiritismo, o que são as 'colônias espirituais'?", opts:["Grupos de médiuns organizados em centros espíritas","Lugares no plano espiritual onde os espíritos vivem e se desenvolvem","Comunidades físicas de espíritas em isolamento","Viagens astrais organizadas por espíritos guias"], correct:1, explain:"As colônias espirituais são comunidades ou moradas no plano espiritual onde os espíritos desencarnados convivem, trabalham e continuam seu progresso." },
+  { level:"Avançado", q:"Na questão 613 do Livro dos Espíritos, o que Kardec confirma sobre a pluralidade dos mundos habitados?", opts:["Se existem seres inteligentes em outros planetas","Se os espíritos podem reencarnar em outros mundos além da Terra","Se Deus criou outros universos paralelos","Se planetas distantes possuem médiuns"], correct:1, explain:"Kardec aborda a pluralidade dos mundos habitados e confirma que os espíritos podem reencarnar em diferentes planetas conforme seu grau de evolução." },
+  { level:"Avançado", q:"O que o Espiritismo entende por 'obsessão espiritual'?", opts:["O vício psicológico por práticas mediúnicas","A influência perturbadora e persistente de um espírito sobre uma pessoa","A fixação de um espírito em seu local de morte","Um distúrbio mental causado por excesso de passes"], correct:1, explain:"A obsessão é a ação perturbadora e persistente de um espírito inferior sobre um encarnado, podendo variar de simples influência até a subjugação da vontade." },
+  { level:"Avançado", q:"Qual conceito espírita distingue 'intuição' de 'inspiração mediúnica'?", opts:["A intuição vem do próprio espírito do indivíduo; a inspiração vem de espíritos externos","Ambas são manifestações do mesmo fenômeno mediúnico","A intuição é exclusiva dos espíritos puros","Só a inspiração é reconhecida pelo Espiritismo como válida"], correct:0, explain:"A intuição é uma influência do próprio espírito do indivíduo sobre sua mente consciente. A inspiração mediúnica é a transmissão de pensamentos por espíritos externos." },
+  { level:"Avançado", q:"O que Kardec denomina 'Espíritos puros' na escala espírita?", opts:["Espíritos que nunca pecaram","Espíritos que completaram todas as encarnações necessárias e atingiram a perfeição relativa","Anjos criados diretamente por Deus sem encarnação","Espíritos que habitam apenas o planeta Terra"], correct:1, explain:"Os Espíritos puros são aqueles que concluíram todas as encarnações necessárias, libertaram-se da matéria e alcançaram o mais alto grau de perfeição atingível." },
+  { level:"Avançado", q:"Segundo a Doutrina Espírita, como se explica a existência do mal no mundo?", opts:["O mal foi criado por Deus para testar os homens","O mal resulta da imperfeição dos espíritos ainda em evolução e do livre-arbítrio","O mal é uma ilusão criada pela matéria","O mal é obra de Espíritos caídos que nunca poderão se redimir"], correct:1, explain:"O Espiritismo ensina que o mal não é criação divina, mas consequência da imperfeição moral dos espíritos e do livre-arbítrio — e que todo espírito pode progredir e se redimir." }
+];
+
+let current = 0, score = 0, answered = false;
+const letters = ['A','B','C','D'];
+
+function render() {
+  const q = questions[current];
+  document.getElementById('q-count').textContent = `Questão ${current+1} de 20`;
+  document.getElementById('score-count').textContent = `${score} acerto${score!==1?'s':''}`;
+  document.getElementById('prog-fill').style.width = `${((current)/20)*100+5}%`;
+  document.getElementById('q-level').textContent = `Nível: ${q.level}`;
+  document.getElementById('q-text').textContent = q.q;
+
+  const optDiv = document.getElementById('options');
+  optDiv.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${opt}`;
+    btn.onclick = () => answer(i);
+    optDiv.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.textContent = '';
+  document.getElementById('next-btn').style.display = 'none';
+  answered = false;
+}
+
+function answer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const btns = document.querySelectorAll('.opt');
+  const fb = document.getElementById('feedback');
+
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.correct) btn.classList.add('correct');
+    else if (i === idx) btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  if (idx === q.correct) {
+    score++;
+    document.getElementById('score-count').textContent = `${score} acerto${score!==1?'s':''}`;
+    fb.className = 'feedback correct';
+    fb.textContent = `✓ Correto! ${q.explain}`;
+  } else {
+    fb.className = 'feedback wrong';
+    fb.textContent = `✗ Incorreto. ${q.explain}`;
+  }
+
+  const btn = document.getElementById('next-btn');
+  btn.style.display = 'block';
+  btn.textContent = current < 19 ? 'Próxima questão →' : 'Ver meu resultado →';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= 20) showResult();
+  else render();
+}
+
+function showResult() {
+  document.getElementById('quiz-section').style.display = 'none';
+  const pct = score / 20;
+  let icon, title, badge, sub;
+
+  if (pct >= 0.9) {
+    icon = '✨'; title = 'Estudioso da Doutrina';
+    badge = 'Conhecimento Avançado';
+    sub = 'Parabéns! Seu domínio da filosofia espírita é notável. Continue aprofundando os estudos e iluminando quem está ao seu redor.';
+  } else if (pct >= 0.7) {
+    icon = '📖'; title = 'Bom conhecimento espírita';
+    badge = 'Nível Intermediário';
+    sub = 'Você tem uma base sólida na doutrina! Algumas questões avançadas ainda pedem mais estudo — continue na trilha do conhecimento.';
+  } else if (pct >= 0.5) {
+    icon = '🌱'; title = 'Ainda em aprendizado';
+    badge = 'Nível Básico';
+    sub = 'Você conhece os fundamentos, mas há muito ainda a explorar. Os livros da codificação aguardam por você!';
+  } else {
+    icon = '🕊️'; title = 'Dando os primeiros passos';
+    badge = 'Iniciante';
+    sub = 'Todo grande estudioso começou do zero! Que tal começar pelo Livro dos Espíritos? A jornada espírita é linda.';
+  }
+
+  document.getElementById('r-icon').textContent = icon;
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-score').textContent = score;
+  document.getElementById('r-badge').textContent = badge;
+  document.getElementById('r-sub').textContent = sub;
+  document.getElementById('result-card').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() {
+  current = 0; score = 0; answered = false;
+  document.getElementById('quiz-section').style.display = 'block';
+  document.getElementById('result-card').style.display = 'none';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
+</script>
+</body>
+</html>
