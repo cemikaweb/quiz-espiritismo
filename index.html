@@ -453,11 +453,36 @@ const questions = [
   { level:"Avançado", q:"Segundo a Doutrina Espírita, como se explica a existência do mal no mundo?", opts:["O mal foi criado por Deus para testar os homens","O mal resulta da imperfeição dos espíritos ainda em evolução e do livre-arbítrio","O mal é uma ilusão criada pela matéria","O mal é obra de Espíritos caídos que nunca poderão se redimir"], correct:1, explain:"O Espiritismo ensina que o mal não é criação divina, mas consequência da imperfeição moral dos espíritos e do livre-arbítrio — e que todo espírito pode progredir e se redimir." }
 ];
 
-let current = 0, score = 0, answered = false;
 const letters = ['A','B','C','D'];
 
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildDeck() {
+  return shuffle(questions).map(q => {
+    const correctText = q.opts[q.correct];
+    const shuffledOpts = shuffle(q.opts);
+    return {
+      level: q.level,
+      q: q.q,
+      opts: shuffledOpts,
+      correct: shuffledOpts.indexOf(correctText),
+      explain: q.explain
+    };
+  });
+}
+
+let deck = buildDeck();
+let current = 0, score = 0, answered = false;
+
 function render() {
-  const q = questions[current];
+  const q = deck[current];
   document.getElementById('q-count').textContent = `Questão ${current+1} de 20`;
   document.getElementById('score-count').textContent = `${score} acerto${score!==1?'s':''}`;
   document.getElementById('prog-fill').style.width = `${((current)/20)*100+5}%`;
@@ -484,7 +509,7 @@ function render() {
 function answer(idx) {
   if (answered) return;
   answered = true;
-  const q = questions[current];
+  const q = deck[current];
   const btns = document.querySelectorAll('.opt');
   const fb = document.getElementById('feedback');
 
@@ -549,6 +574,7 @@ function showResult() {
 }
 
 function restart() {
+  deck = buildDeck();
   current = 0; score = 0; answered = false;
   document.getElementById('quiz-section').style.display = 'block';
   document.getElementById('result-card').style.display = 'none';
